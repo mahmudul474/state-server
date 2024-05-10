@@ -20,41 +20,41 @@ app.use(cors());
 
 
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
-const uri =
-  "mongodb+srv://amin:mOSRumMFH1wcNdCk@softopark.ockrkce.mongodb.net/?retryWrites=true&w=majority&appName=softopark";
+// const { MongoClient, ServerApiVersion } = require("mongodb");
+// const uri =
+//   "mongodb+srv://amin:mOSRumMFH1wcNdCk@softopark.ockrkce.mongodb.net/?retryWrites=true&w=majority&appName=softopark";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
+// // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+// const client = new MongoClient(uri, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   },
+// });
 
-async function run() {
-  try {
+// async function run() {
+//   try {
      
  
 
-const myDB = client.db("myDB");
-const menucollection= myDB.collection("pizzaMenu");
+// const myDB = client.db("myDB");
+// const menucollection= myDB.collection("pizzaMenu");
 
 
 
-   app.post("/data", (req, res) => {
-     const data = req.body;
-     const result = menucollection.insertOne(data);
-     res.json({msg:"data inserted successfully", data: result});
-   });
+//    app.post("/data", (req, res) => {
+//      const data = req.body;
+//      const result = menucollection.insertOne(data);
+//      res.json({msg:"data inserted successfully", data: result});
+//    });
 
      
-  } finally {
+//   } finally {
     
-  }
-}
-run().catch(console.dir);
+//   }
+// }
+// run().catch(console.dir);
 
 
 
