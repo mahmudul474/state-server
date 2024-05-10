@@ -9,21 +9,43 @@ app.use(express.json());
 app.use(cors());
  
  
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient } = require("mongodb");
+
+// MongoDB connection URI
 const uri =
-  "mongodb+srv://<username>:<password>@cluster0.x52xd2s.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+  "mongodb+srv://<username>:<password>@cluster0.x52xd2s.mongodb.net/<dbname>?retryWrites=true&w=majority";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri);
+// Function to connect to MongoDB and perform operations
+async function connectAndPerformOperations() {
+  const client = new MongoClient(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 
-async function run() {
   try {
-    
+    // Connect to the MongoDB database
+    await client.connect();
+    console.log("Connected to the MongoDB database");
 
-console.log("before starting")
+    // Perform database operations here
+    const database = client.db("<dbname>");
+    const collection = database.collection("<collection>");
 
+    // Example: Insert a document
+    await collection.insertOne({ name: "John", age: 30 });
+    console.log("Inserted document into collection");
+
+    // Example: Find documents
+    const documents = await collection.find({}).toArray();
+    console.log("Found documents:", documents);
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
   } finally {
-    
+    // Close the connection when done
+    await client.close();
+    console.log("Connection closed");
   }
 }
-run().catch(console.dir);
+
+// Call the function to connect and perform operations
+connectAndPerformOperations();
