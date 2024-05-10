@@ -1,81 +1,59 @@
 const express = require("express");
+const fs = require("fs");
 const app = express();
-const port = 3000;
-const cors= require("cors");
- 
-//middleware
 app.use(express.json());
-app.use(cors());
 
+const dataFilePath = "./data.json";
 
-
-const  main=()=>{
-  
- app.get("/hello", (req, res)=>{
-    res.send("world! bad server this  one ");
- }) 
-
-
-}
-  main();
-
-
-
-
-
-const { MongoClient, ServerApiVersion } = require("mongodb");
-const uri =
-  "mongodb+srv://<username>:<password>@cluster0.x52xd2s.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-
-async function run() {
+// Helper function to read data from the JSON file
+const readDataFromFile = () => {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
+    const data = fs.readFileSync(dataFilePath);
+    return JSON.parse(data);
+  } catch (error) {
+    console.error("Error reading data from file:", error);
+    return [];
   }
-}
-run().catch(console.dir);
+};
 
+// Helper function to write data to the JSON file
+const writeDataToFile = (data) => {
+  try {
+    fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error("Error writing data to file:", error);
+  }
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+// GET all items
+app.get("/api/items", (req, res) => {
+  const items = readDataFromFile();
+  res.json(items);
 });
 
+// GET item by ID
+app.get("/api/items/:id", (req, res) => {
+  const itemId = parseInt(req.params.id);
+  const items = readDataFromFile();
+  const item = items.find((item) => item.id === itemId);
+  if (!item) return res.status(404).send("Item not found");
+  res.json(item);
+});
 
+// POST a new item
+app.post("/api/items", (req, res) => {
+  const newItem = {
+    id: Date.now(),
+    name: req.body.name,
+  };
+  const items = readDataFromFile();
+  items.push(newItem);
+  writeDataToFile(items);
+  res.status(201).json(newItem);
+});
 
-
-
+// Start the server
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
